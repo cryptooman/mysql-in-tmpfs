@@ -13,7 +13,7 @@
 #
 # If need to autorun on server boot:
 # sudo crontab -e
-#     @reboot /bin/bash mysql-in-tmpfs.sh &>> /var/log/mysql-in-tmpfs.log</i>
+#     @reboot /bin/bash mysql-in-tmpfs.sh &>> /var/log/mysql-in-tmpfs.log
 #
 # Compatibility:
 # The script was tested on Ubuntu 20.04.1 LTS, MySQL version 8.0.*
