@@ -8,6 +8,8 @@ For example, if we take a look at "Codeception" testing framework guide we can f
 If your database is a large collection of 100+ tables and has many "statuses" and "types" tables that need to be populated, then you might face up with slow loading of your data into MySQL.
 Slow unit tests are very annoying during development.
 
+Same behaviour can be also achieved by using Docker with the appropriate configuration.
+
 # So:
 <pre>
 Unit tests with MySQL completely in RAM are twice or more faster than SSD MySQL
@@ -32,8 +34,8 @@ If need to autorun on server boot:
 Defined params:
 <i>MYSQL_APPARMOR_FILE="/etc/apparmor.d/usr.sbin.mysqld"
 MYSQL_TMP_DATA_DIR="/dev/shm/mysql-in-tmpfs"
-MYSQL_TMP_PID_FILE="/dev/shm/mysql-in-tmpfs/mysql.pid"
-MYSQL_TMP_SOCKET="/dev/shm/mysql-in-tmpfs/mysql.sock"
+MYSQL_TMP_PID_FILE="/dev/shm/mysql-in-tmpfs/mysqld.pid"
+MYSQL_TMP_SOCKET="/dev/shm/mysql-in-tmpfs/mysqld.sock"
 MYSQL_TMP_ERR_LOG="/var/log/mysql/mysql-in-tmpfs-error.log"
 MYSQL_TMP_HOST="127.0.0.1"
 MYSQL_TMP_PORT=33069

@@ -7,7 +7,7 @@
 #
 # Usage:
 # sudo bash mysql-in-tmpfs.sh
-# 
+#
 # To verbose script each command run:
 # sudo bash -x mysql-in-tmpfs.sh
 #
@@ -21,8 +21,8 @@
 
 readonly MYSQL_APPARMOR_FILE="/etc/apparmor.d/usr.sbin.mysqld"
 readonly MYSQL_TMP_DATA_DIR="/dev/shm/mysql-in-tmpfs"
-readonly MYSQL_TMP_PID_FILE="/dev/shm/mysql-in-tmpfs/mysql.pid"
-readonly MYSQL_TMP_SOCKET="/dev/shm/mysql-in-tmpfs/mysql.sock"
+readonly MYSQL_TMP_PID_FILE="/dev/shm/mysql-in-tmpfs/mysqld.pid"
+readonly MYSQL_TMP_SOCKET="/dev/shm/mysql-in-tmpfs/mysqld.sock"
 readonly MYSQL_TMP_ERR_LOG="/var/log/mysql/mysql-in-tmpfs-error.log"
 readonly MYSQL_TMP_HOST="127.0.0.1"
 readonly MYSQL_TMP_PORT=33069
@@ -65,15 +65,15 @@ _echo "*** Going to run detached mysql instance based completely in RAM (tmpfs) 
 
 # Patch mysql apparmor if need
 [[ -e $MYSQL_APPARMOR_FILE ]] || _err "Mysql apparmor file not exists: $MYSQL_APPARMOR_FILE"
-if [[ ! $( cat /etc/apparmor.d/usr.sbin.mysqld | grep "$MYSQL_TMP_DATA_DIR" ) ]]; then
+if [[ ! $( cat $MYSQL_APPARMOR_FILE | grep "$MYSQL_TMP_DATA_DIR" ) ]]; then
     _echo "Patching mysql apparmor file: $MYSQL_APPARMOR_FILE"
+    apparmOrigFile="/etc/apparmor/$(basename $MYSQL_APPARMOR_FILE).orig"
+    cp -p $MYSQL_APPARMOR_FILE $apparmOrigFile
+    _echo "Original file saved to: $apparmOrigFile"
     patch="\n"
     patch+="  # Mysql in tmpfs\n"
     patch+="  $MYSQL_TMP_DATA_DIR/ r,\n"
     patch+="  $MYSQL_TMP_DATA_DIR/** rwk,\n"
-    patch+="  $MYSQL_TMP_PID_FILE rw,\n"
-    patch+="  $MYSQL_TMP_SOCKET rw,\n"
-    patch+="  $MYSQL_TMP_SOCKET.lock rw,\n"
     patch+="  $MYSQL_TMP_ERR_LOG rw,\n"
     patch+="}"
     sed -r -i "s~^\s*\}\s*$~$patch~" $MYSQL_APPARMOR_FILE; _iferr
