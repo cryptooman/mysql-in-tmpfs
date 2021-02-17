@@ -77,7 +77,7 @@ if [[ ! $( cat $MYSQL_APPARMOR_FILE | grep "$MYSQL_TMP_DATA_DIR" ) ]]; then
     patch+="  $MYSQL_TMP_ERR_LOG rw,\n"
     patch+="}"
     sed -r -i "s~^\s*\}\s*$~$patch~" $MYSQL_APPARMOR_FILE; iferr
-    systemctl reload apparmor.service; iferr
+    # NOTE: Reload of apparmor.service will be executed below
 fi
 
 # Stop previous mysqld instance if exists
@@ -102,6 +102,9 @@ echoDt "Creating mysql temp data dir"
 rm -rf $MYSQL_TMP_DATA_DIR; iferr
 mkdir $MYSQL_TMP_DATA_DIR; iferr
 chown $MYSQL_TMP_OWNER $MYSQL_TMP_DATA_DIR; iferr
+# Apply apparmor config to the $MYSQL_TMP_DATA_DIR
+systemctl reload apparmor.service; iferr
+sleep 1
 
 echoDt "Initializing mysql temp data"
 mysqld --initialize --datadir=$MYSQL_TMP_DATA_DIR --disable-log-bin --log-error=$MYSQL_TMP_ERR_LOG; iferr
